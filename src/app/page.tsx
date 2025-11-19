@@ -15,6 +15,7 @@ export default function LandingPage() {
     quote: '你好，我是一名全栈开发工程师、技术爱好者、 INFP、杀戮尖塔高手',
     buttons: [
       { text: '👋 进入主页', link: '/about-me', variant: 'pink' },
+      { text: '🧠 MBTI 测试', link: '/mbti-test', variant: 'purple' },
       { text: '💻 Github', link: 'https://github.com/smjhhhh', variant: 'blue', external: true }
     ]
   }
@@ -179,6 +180,8 @@ export default function LandingPage() {
                     className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${
                       btn.variant === 'pink'
                         ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
+                        : btn.variant === 'purple'
+                        ? 'bg-white/10 border-2 border-purple-400 text-purple-400 hover:bg-purple-400/20'
                         : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
                     }`}
                   >
@@ -191,6 +194,8 @@ export default function LandingPage() {
                     className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${
                       btn.variant === 'pink'
                         ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
+                        : btn.variant === 'purple'
+                        ? 'bg-white/10 border-2 border-purple-400 text-purple-400 hover:bg-purple-400/20'
                         : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
                     }`}
                   >

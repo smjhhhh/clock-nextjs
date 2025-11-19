@@ -10,6 +10,7 @@ export default function Navbar() {
     { href: '/', label: 'Home' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/blog', label: 'Blog' },
+    { href: '/mbti-test', label: 'MBTI Test' },
   ]
 
   const isActive = (href: string) => {
