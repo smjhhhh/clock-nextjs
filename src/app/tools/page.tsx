@@ -8,6 +8,7 @@ import ExchangeRate from '@/components/ExchangeRate'
 import Countdown from '@/components/Countdown'
 import FeedsWidget from '@/components/FeedsWidget'
 import GoldChart from '@/components/GoldChart'
+import WorldMap from '@/components/WorldMap'
 
 // Translation types
 interface Translations {
@@ -170,8 +171,8 @@ export default function ToolsPage() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               🗺️ {t.worldMap}
             </h3>
-            <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-500">
-              World Map (Coming Soon)
+            <div className="h-96 rounded-lg overflow-hidden">
+              <WorldMap />
             </div>
           </div>
           <div className="bg-sky-100 dark:bg-sky-900 rounded-2xl shadow-lg p-6 border border-sky-200 dark:border-sky-700">
