@@ -8,41 +8,17 @@ import { FaGithub } from 'react-icons/fa'
 export default function AdminLoginPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-
-        if (error) {
-          console.error('Auth check error:', error)
-          setChecking(false)
-          return
-        }
-
-        if (session) {
-          // Already logged in, use window.location for hard redirect
-          window.location.href = '/admin'
-          return
-        } else {
-          setChecking(false)
-        }
-      } catch (err) {
-        console.error('Unexpected error during auth check:', err)
-        setChecking(false)
+    // Quick check if already logged in, but don't block UI
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        window.location.href = '/admin'
       }
-    }
-
-    // Add timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      console.warn('Auth check timeout, forcing UI to show')
-      setChecking(false)
-    }, 3000)
-
-    checkAuth().finally(() => clearTimeout(timeout))
-  }, [router])
+    }).catch(err => {
+      console.error('Auth check error:', err)
+    })
+  }, [])
 
   const handleGitHubLogin = async () => {
     setLoading(true)
@@ -64,17 +40,6 @@ export default function AdminLoginPage() {
       alert('发生意外错误')
       setLoading(false)
     }
-  }
-
-  if (checking) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
-          <p className="text-white">检查登录状态...</p>
-        </div>
-      </div>
-    )
   }
 
   return (
