@@ -8,10 +8,11 @@ export async function GET(request: Request) {
   const error = searchParams.get('error')
   const error_description = searchParams.get('error_description')
 
-  // If there's an OAuth error, redirect to gallery with error info
+  // If there's an OAuth error, redirect with error info
   if (error) {
     console.error('OAuth error:', error, error_description)
-    return NextResponse.redirect(`${origin}/gallery?error=${encodeURIComponent(error_description || error)}`)
+    const fallbackUrl = next.startsWith('/admin') ? '/admin/login' : '/gallery'
+    return NextResponse.redirect(`${origin}${fallbackUrl}?error=${encodeURIComponent(error_description || error)}`)
   }
 
   if (code) {
@@ -27,7 +28,8 @@ export async function GET(request: Request) {
     }
 
     console.error('Code exchange error:', exchangeError)
-    return NextResponse.redirect(`${origin}/gallery?error=${encodeURIComponent(exchangeError.message)}`)
+    const fallbackUrl = next.startsWith('/admin') ? '/admin/login' : '/gallery'
+    return NextResponse.redirect(`${origin}${fallbackUrl}?error=${encodeURIComponent(exchangeError.message)}`)
   }
 
   // No code means PKCE flow with hash fragments - redirect to gallery

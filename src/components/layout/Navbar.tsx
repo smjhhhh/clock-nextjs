@@ -10,7 +10,6 @@ export default function Navbar() {
     { href: '/', label: 'Home' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/blog', label: 'Blog' },
-    { href: '/admin', label: 'Admin' },
   ]
 
   const isActive = (href: string) => {

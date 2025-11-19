@@ -46,7 +46,7 @@ export default function GalleryPage() {
   }))
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900">
       <Navbar />
 
       {/* Main Content */}

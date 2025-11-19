@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import Navbar from '@/components/layout/Navbar'
 import UploadModal from '@/components/gallery/UploadModal'
 
 export default function AdminPage() {
-  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
+  const { user, loading: authLoading, signOut } = useAuth()
   const [activeTab, setActiveTab] = useState<'blog' | 'photos'>('blog')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -18,12 +18,40 @@ export default function AdminPage() {
   const [publishing, setPublishing] = useState(false)
   const [photos, setPhotos] = useState<Array<{ id: string; title: string; image_url: string; is_public: boolean }>>([])
   const [showUpload, setShowUpload] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    if (user) {
+    const checkAdminAccess = async () => {
+      if (!authLoading && user) {
+        // Check if user email is in admin whitelist
+        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',').map(e => e.trim()) || []
+        const userEmail = user.email || ''
+
+        if (adminEmails.includes(userEmail)) {
+          setIsAuthorized(true)
+          fetchPhotos()
+        } else {
+          // Not authorized, sign out and redirect
+          console.warn('Unauthorized access attempt:', userEmail)
+          await signOut()
+          router.push('/?error=unauthorized')
+        }
+      } else if (!authLoading && !user) {
+        // Not logged in, redirect to login
+        router.push('/admin/login')
+      }
+      setChecking(false)
+    }
+
+    checkAdminAccess()
+  }, [user, authLoading, router, signOut])
+
+  useEffect(() => {
+    if (isAuthorized && user) {
       fetchPhotos()
     }
-  }, [user])
+  }, [isAuthorized, user])
 
   const fetchPhotos = async () => {
     const { data } = await supabase
@@ -82,37 +110,58 @@ export default function AdminPage() {
     }
   }
 
-  if (authLoading) {
+  const handleSignOut = async () => {
+    if (confirm('确定要退出登录吗？')) {
+      await signOut()
+      router.push('/')
+    }
+  }
+
+  if (authLoading || checking) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-white">验证身份中...</p>
+        </div>
       </div>
     )
   }
 
-  if (!user) {
+  if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">需要管理员权限</h1>
-          <p className="text-gray-600 mb-6">请先登录以访问后台管理系统</p>
-          <Link href="/gallery" className="px-6 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600">
-            前往登录
-          </Link>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <p>权限验证中...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
-
-      {/* User Info Bar */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="text-sm text-gray-600 text-right">
-            当前用户: {user.email}
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
+      {/* Admin Header */}
+      <div className="bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white">管理后台</h1>
+              <p className="text-pink-100 text-sm mt-1">管理员: {user?.email}</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <a
+                href="/"
+                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors text-sm"
+              >
+                返回首页
+              </a>
+              <button
+                onClick={handleSignOut}
+                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors text-sm"
+              >
+                退出登录
+              </button>
+            </div>
           </div>
         </div>
       </div>

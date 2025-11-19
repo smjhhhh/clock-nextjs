@@ -47,7 +47,7 @@ export default function BlogPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
       <Navbar />
 
       {/* Main Content */}

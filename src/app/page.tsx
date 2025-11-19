@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { FaGithub } from 'react-icons/fa'
 
 export default function LandingPage() {
   const [emojis, setEmojis] = useState<Array<{ emoji: string; id: string; row: number; index: number }>>([])
@@ -12,11 +11,11 @@ export default function LandingPage() {
     name: 'Yoru',
     nameHighlight: 'Yoru',
     avatar: '/images/avatar.webp',
-    title: '全栈开发 / 碎碎念 / 工具集成',
+    title: '全栈开发 / 碎碎念/工具集成',
     quote: '你好，我是一名全栈开发工程师、技术爱好者、 INFP、杀戮尖塔高手',
     buttons: [
-      { text: '👋 进入主页', link: '/dashboard', variant: 'pink' },
-      { text: 'Github', link: 'https://github.com/smjhhhh', variant: 'blue', external: true, icon: 'github' }
+      { text: '👋 进入主页', link: '/about-me', variant: 'pink' },
+      { text: '💻 Github', link: 'https://github.com/smjhhhh', variant: 'blue', external: true }
     ]
   }
 
@@ -140,26 +139,7 @@ export default function LandingPage() {
         <div className="text-center animate-scale-in-center">
           {/* Avatar */}
           <div className="mb-8 flex justify-center">
-            <style jsx global>{`
-              @keyframes avatar-float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-20px); }
-              }
-              @keyframes avatar-glow {
-                0%, 100% {
-                  box-shadow: 0 0 20px rgba(34, 211, 238, 0.6), 0 0 40px rgba(34, 211, 238, 0.3);
-                  border-color: #22d3ee;
-                }
-                50% {
-                  box-shadow: 0 0 40px rgba(34, 211, 238, 1), 0 0 60px rgba(34, 211, 238, 0.5);
-                  border-color: #06b6d4;
-                }
-              }
-              .floating-avatar {
-                animation: avatar-float 3s ease-in-out infinite, avatar-glow 2s ease-in-out infinite;
-              }
-            `}</style>
-            <div className="floating-avatar w-48 h-48 rounded-full overflow-hidden border-4 border-cyan-400 shadow-2xl bg-white">
+            <div className="avatar-float w-48 h-48 rounded-full overflow-hidden border-4 border-cyan-400 shadow-2xl bg-white">
               <img
                 src={config.avatar}
                 alt="Avatar"
@@ -196,22 +176,23 @@ export default function LandingPage() {
                     href={btn.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 flex items-center gap-2 ${btn.variant === 'pink'
-                      ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
-                      : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
-                      }`}
+                    className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${
+                      btn.variant === 'pink'
+                        ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
+                        : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
+                    }`}
                   >
-                    {btn.icon === 'github' && <FaGithub className="text-xl" />}
                     {btn.text}
                   </a>
                 ) : (
                   <Link
                     key={idx}
                     href={btn.link}
-                    className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${btn.variant === 'pink'
-                      ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
-                      : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
-                      }`}
+                    className={`px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 ${
+                      btn.variant === 'pink'
+                        ? 'bg-white/10 border-2 border-pink-400 text-pink-400 hover:bg-pink-400/20'
+                        : 'bg-white/10 border-2 border-blue-400 text-blue-400 hover:bg-blue-400/20'
+                    }`}
                   >
                     {btn.text}
                   </Link>

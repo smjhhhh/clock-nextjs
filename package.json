@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.81.1",
+    "@supabase/supabase-js": "^2.83.0",
     "aos": "^2.3.4",
     "browser-image-compression": "^2.0.2",
     "exif-js": "^2.3.0",
@@ -23,6 +23,7 @@
     "react-leaflet": "^5.0.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "vaso": "^0.4.0",
     "yet-another-react-lightbox": "^3.25.0"
   },
   "devDependencies": {
