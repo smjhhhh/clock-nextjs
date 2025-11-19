@@ -13,15 +13,37 @@ export default function AdminLoginPage() {
   useEffect(() => {
     // Check if user is already logged in
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        // Already logged in, redirect to admin
-        router.push('/admin')
-      } else {
+      try {
+        console.log('Checking auth session...')
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('Auth check error:', error)
+          setChecking(false)
+          return
+        }
+
+        if (session) {
+          console.log('Session found, redirecting to admin')
+          // Already logged in, redirect to admin
+          router.push('/admin')
+        } else {
+          console.log('No session found')
+          setChecking(false)
+        }
+      } catch (err) {
+        console.error('Unexpected error during auth check:', err)
         setChecking(false)
       }
     }
-    checkAuth()
+
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.warn('Auth check timeout, forcing UI to show')
+      setChecking(false)
+    }, 3000)
+
+    checkAuth().finally(() => clearTimeout(timeout))
   }, [router])
 
   const handleGitHubLogin = async () => {
