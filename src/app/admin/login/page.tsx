@@ -9,42 +9,27 @@ export default function AdminLoginPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
-  const [debugInfo, setDebugInfo] = useState<string[]>([])
-
-  const addDebug = (msg: string) => {
-    console.log('[Admin Login]', msg)
-    setDebugInfo(prev => [...prev, msg])
-  }
 
   useEffect(() => {
-    // Check Supabase config first
-    addDebug('Component mounted')
-    addDebug(`Supabase URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING'}`)
-    addDebug(`Supabase Key: ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING'}`)
-
     // Check if user is already logged in
     const checkAuth = async () => {
       try {
-        addDebug('Starting auth session check...')
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          addDebug(`Auth check error: ${error.message}`)
           console.error('Auth check error:', error)
           setChecking(false)
           return
         }
 
         if (session) {
-          addDebug('Session found, redirecting to /admin')
-          // Already logged in, redirect to admin
-          router.push('/admin')
+          // Already logged in, use window.location for hard redirect
+          window.location.href = '/admin'
+          return
         } else {
-          addDebug('No session found, showing login form')
           setChecking(false)
         }
       } catch (err) {
-        addDebug(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`)
         console.error('Unexpected error during auth check:', err)
         setChecking(false)
       }
@@ -52,7 +37,6 @@ export default function AdminLoginPage() {
 
     // Add timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      addDebug('Auth check timeout (3s), forcing UI to show')
       console.warn('Auth check timeout, forcing UI to show')
       setChecking(false)
     }, 3000)
@@ -84,25 +68,10 @@ export default function AdminLoginPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-          <div className="text-center mb-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
-            <div className="text-white text-lg">检查登录状态...</div>
-          </div>
-          {/* Debug Info */}
-          {debugInfo.length > 0 && (
-            <div className="mt-4 text-left">
-              <div className="text-xs text-gray-400 mb-2">调试信息：</div>
-              <div className="bg-black/30 rounded-lg p-3 max-h-40 overflow-y-auto">
-                {debugInfo.map((info, i) => (
-                  <div key={i} className="text-xs text-gray-300 font-mono mb-1">
-                    {info}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-white">检查登录状态...</p>
         </div>
       </div>
     )
