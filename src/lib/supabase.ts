@@ -115,4 +115,18 @@ export type Photo = {
   description: string | null
   is_public: boolean
   created_at: string
+  // Smart Album Fields
+  metadata: Record<string, any> | null
+  taken_at: string | null
+  latitude: number | null
+  longitude: number | null
+  location_name: string | null
+  tags: string[] | null
+  camera_make: string | null
+  camera_model: string | null
+  lens_model: string | null
+  focal_length: number | null
+  aperture: number | null
+  iso: number | null
+  exposure_time: string | null
 }

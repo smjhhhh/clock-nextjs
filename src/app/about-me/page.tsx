@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FaReact, FaNodeJs, FaPython, FaDocker, FaGitAlt, FaVuejs, FaGithub } from 'react-icons/fa'
+import { FaReact, FaNodeJs, FaPython, FaDocker, FaGitAlt, FaVuejs, FaGithub, FaMusic } from 'react-icons/fa'
 import { SiTypescript, SiTailwindcss, SiGmail } from 'react-icons/si'
 import PhotoFrame from '@/components/PhotoFrame'
 
@@ -194,6 +194,33 @@ const mbtiNames: Record<string, string> = {
   'ISFP': '探险家',
   'ESTP': '企业家',
   'ESFP': '表演者'
+}
+
+const MusicBox = () => {
+  return (
+    <div className="bg-white dark:bg-white/5 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-800 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+      {/* Diagonal stripes background */}
+      <div
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 10px)'
+        }}
+      />
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-6">
+          <FaMusic className="text-lg" />
+          <span className="text-sm font-medium">Music</span>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight">摇滚</h3>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent tracking-tight">Pop</h3>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-400 bg-clip-text text-transparent tracking-tight">R&B</h3>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function HomePage() {
@@ -506,14 +533,8 @@ export default function HomePage() {
                   <span>🌟</span>
                   <span>About Me</span>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                    <span className="text-lg">🧠</span>
-                    <div>
-                      <span className="text-sm font-medium">MBTI</span>
-                      <p className={`text-xs font-semibold ${mbtiColors.textLight} dark:${mbtiColors.textDark}`}>{mbtiType.fullType} - {mbtiType.typeName}</p>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                   <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
                     <img src="/images/libra.png" alt="Libra" className="w-8 h-8 object-contain" />
                     <div>
@@ -531,6 +552,8 @@ export default function HomePage() {
                 </div>
               </div>
             </section>
+
+
 
             {/* MBTI Analysis */}
             <section>
@@ -694,6 +717,11 @@ export default function HomePage() {
                 </a>
               </div>
             </div>
+
+            {/* Music Box */}
+            <section>
+              <MusicBox />
+            </section>
 
             {/* Photo Gallery */}
             <PhotoFrame />

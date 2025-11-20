@@ -7,6 +7,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import UploadModal from '@/components/gallery/UploadModal'
+import PhotoUpload from '@/components/gallery/PhotoUpload'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+import StatCard from '@/components/admin/StatCard'
+import { FaPenNib, FaImages, FaPlus, FaTrash, FaEdit, FaEye, FaEyeSlash } from 'react-icons/fa'
 
 interface BlogPost {
   id: string
@@ -19,7 +23,7 @@ interface BlogPost {
 export default function AdminPage() {
   const router = useRouter()
   const { user, loading: authLoading, signOut } = useAuth()
-  const [activeTab, setActiveTab] = useState<'blog' | 'photos'>('blog')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'blog' | 'photos'>('dashboard')
   const [blogView, setBlogView] = useState<'create' | 'list'>('list')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -35,7 +39,6 @@ export default function AdminPage() {
   useEffect(() => {
     const checkAdminAccess = async () => {
       if (!authLoading && user) {
-        // Check if user email is in admin whitelist
         const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',').map(e => e.trim()) || []
         const userEmail = user.email || ''
 
@@ -44,13 +47,11 @@ export default function AdminPage() {
           fetchBlogs()
           fetchPhotos()
         } else {
-          // Not authorized, sign out and redirect
           console.warn('Unauthorized access attempt:', userEmail)
           await signOut()
           router.push('/?error=unauthorized')
         }
       } else if (!authLoading && !user) {
-        // Not logged in, redirect to login
         router.push('/admin/login')
       }
       setChecking(false)
@@ -89,7 +90,6 @@ export default function AdminPage() {
     setPublishing(true)
     try {
       if (editingBlog) {
-        // Update existing blog
         const { error } = await supabase
           .from('articles')
           .update({ title, content, author })
@@ -98,7 +98,6 @@ export default function AdminPage() {
         if (error) throw error
         alert('文章更新成功！')
       } else {
-        // Create new blog
         const { error } = await supabase
           .from('articles')
           .insert([{ title, content, author }])
@@ -137,7 +136,6 @@ export default function AdminPage() {
       .eq('id', id)
 
     if (!error) {
-      alert('文章已删除')
       fetchBlogs()
     } else {
       alert('删除失败')
@@ -173,6 +171,9 @@ export default function AdminPage() {
 
     if (!error) {
       fetchPhotos()
+    } else {
+      console.error('Delete failed:', error)
+      alert(`删除失败: ${error.message}`)
     }
   }
 
@@ -185,309 +186,241 @@ export default function AdminPage() {
 
   if (authLoading || checking) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
-          <p className="text-white">验证身份中...</p>
+          <p className="text-white font-medium">验证身份中...</p>
         </div>
       </div>
     )
   }
 
   if (!isAuthorized) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <p>权限验证中...</p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
-      {/* Admin Header */}
-      <div className="bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">管理后台</h1>
-              <p className="text-pink-100 text-sm mt-1">管理员: {user?.email}</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex">
+      {/* Sidebar */}
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        userEmail={user?.email}
+        onSignOut={handleSignOut}
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
+        <div className="max-w-7xl mx-auto">
+
+          {/* Dashboard View */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8 animate-fade-in">
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">欢迎回来, 管理员 👋</h2>
+                <p className="text-gray-500 dark:text-gray-400 mt-2">这里是你网站的控制中心。</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                  title="总文章数"
+                  value={blogs.length}
+                  icon={<FaPenNib className="text-2xl" />}
+                  color="pink"
+                />
+                <StatCard
+                  title="总照片数"
+                  value={photos.length}
+                  icon={<FaImages className="text-2xl" />}
+                  color="purple"
+                />
+              </div>
+
+              {/* Recent Activity or Quick Actions could go here */}
             </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="/"
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors text-sm"
-              >
-                返回首页
-              </a>
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors text-sm"
-              >
-                退出登录
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+          )}
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="flex gap-4 mb-8">
-          <button
-            onClick={() => setActiveTab('blog')}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-              activeTab === 'blog'
-                ? 'bg-pink-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            📝 博客管理
-          </button>
-          <button
-            onClick={() => setActiveTab('photos')}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-              activeTab === 'photos'
-                ? 'bg-pink-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            📸 照片管理
-          </button>
-        </div>
+          {/* Blog Management */}
+          {activeTab === 'blog' && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">博客管理</h2>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setBlogView('list')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${blogView === 'list' ? 'bg-white shadow text-pink-600' : 'text-gray-500 hover:bg-gray-100'
+                      }`}
+                  >
+                    列表视图
+                  </button>
+                  <button
+                    onClick={() => {
+                      setBlogView('create')
+                      handleCancelEdit()
+                    }}
+                    className="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium shadow-lg shadow-pink-500/30 transition-all flex items-center gap-2"
+                  >
+                    <FaPlus /> 写文章
+                  </button>
+                </div>
+              </div>
 
-        {/* Blog Management */}
-        {activeTab === 'blog' && (
-          <div className="space-y-6">
-            {/* Sub Tabs */}
-            <div className="flex gap-4">
-              <button
-                onClick={() => setBlogView('list')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
-                  blogView === 'list'
-                    ? 'bg-white text-pink-500 border-2 border-pink-500'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-transparent'
-                }`}
-              >
-                📋 文章列表 ({blogs.length})
-              </button>
-              <button
-                onClick={() => {
-                  setBlogView('create')
-                  handleCancelEdit()
-                }}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
-                  blogView === 'create'
-                    ? 'bg-white text-pink-500 border-2 border-pink-500'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-transparent'
-                }`}
-              >
-                ✏️ 写文章
-              </button>
-            </div>
-
-            {/* Blog List View */}
-            {blogView === 'list' && (
-              <div className="bg-white rounded-xl shadow-md border border-gray-200">
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">已发布文章</h2>
-
+              {blogView === 'list' ? (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
                   {blogs.length === 0 ? (
-                    <div className="text-center py-12">
-                      <p className="text-gray-500 mb-4">还没有发布任何文章</p>
-                      <button
-                        onClick={() => setBlogView('create')}
-                        className="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
-                      >
-                        发布第一篇文章
-                      </button>
+                    <div className="text-center py-20">
+                      <p className="text-gray-500">暂无文章</p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="divide-y divide-gray-100 dark:divide-slate-700">
                       {blogs.map((blog) => (
-                        <div
-                          key={blog.id}
-                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-2">{blog.title}</h3>
-                              <p className="text-sm text-gray-500 mb-2">
-                                作者: {blog.author} · {new Date(blog.created_at).toLocaleString('zh-CN')}
-                              </p>
-                              <p className="text-gray-600 line-clamp-2 text-sm">
-                                {blog.content.substring(0, 150)}...
-                              </p>
-                            </div>
-                            <div className="flex gap-2 ml-4">
-                              <button
-                                onClick={() => handleEditBlog(blog)}
-                                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                              >
-                                编辑
-                              </button>
-                              <button
-                                onClick={() => handleDeleteBlog(blog.id)}
-                                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                              >
-                                删除
-                              </button>
-                            </div>
+                        <div key={blog.id} className="p-6 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors flex justify-between items-start group">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{blog.title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                              {new Date(blog.created_at).toLocaleDateString()} · {blog.author}
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-300 line-clamp-1 text-sm max-w-2xl">
+                              {blog.content.substring(0, 100)}...
+                            </p>
+                          </div>
+                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => handleEditBlog(blog)}
+                              className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="编辑"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBlog(blog.id)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              title="删除"
+                            >
+                              <FaTrash />
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Blog Create/Edit View */}
-            {blogView === 'create' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Edit Form */}
-                <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      {editingBlog ? '编辑文章' : '发布新文章'}
-                    </h2>
-                    {editingBlog && (
-                      <button
-                        onClick={handleCancelEdit}
-                        className="text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        取消编辑
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">标题</label>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-200px)]">
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 flex flex-col h-full">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                        {editingBlog ? '编辑文章' : '撰写新文章'}
+                      </h3>
+                      {editingBlog && (
+                        <button onClick={handleCancelEdit} className="text-sm text-gray-500 hover:text-gray-700">取消</button>
+                      )}
+                    </div>
+                    <div className="space-y-4 flex-1 flex flex-col">
                       <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="文章标题"
+                        className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-pink-500 text-lg font-bold"
+                        placeholder="输入标题..."
                       />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">作者</label>
                       <input
                         type="text"
                         value={author}
                         onChange={(e) => setAuthor(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        className="w-full px-4 py-2 bg-gray-50 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-pink-500 text-sm"
+                        placeholder="作者名称"
                       />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        内容（支持 Markdown）
-                      </label>
                       <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        rows={18}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent font-mono text-sm"
-                        placeholder="在这里写文章内容..."
+                        className="w-full flex-1 p-4 bg-gray-50 dark:bg-slate-900 border-none rounded-xl focus:ring-2 focus:ring-pink-500 font-mono text-sm resize-none"
+                        placeholder="开始写作 (支持 Markdown)..."
                       />
+                      <button
+                        onClick={handlePublishArticle}
+                        disabled={publishing}
+                        className="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-xl font-bold shadow-lg shadow-pink-500/30 transition-all disabled:opacity-50"
+                      >
+                        {publishing ? '处理中...' : (editingBlog ? '更新文章' : '发布文章')}
+                      </button>
                     </div>
+                  </div>
 
-                    <button
-                      onClick={handlePublishArticle}
-                      disabled={publishing}
-                      className="w-full px-4 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50"
-                    >
-                      {publishing ? (editingBlog ? '更新中...' : '发布中...') : (editingBlog ? '更新文章' : '发布文章')}
-                    </button>
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 overflow-y-auto h-full">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">预览</h3>
+                    <div className="prose prose-pink dark:prose-invert max-w-none">
+                      {title && <h1>{title}</h1>}
+                      {content ? (
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                      ) : (
+                        <p className="text-gray-400 italic">预览内容将显示在这里...</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Live Preview */}
-                <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">实时预览</h2>
-
-                  <div className="prose prose-pink max-w-none max-h-[700px] overflow-y-auto">
-                    {title && (
-                      <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
-                    )}
-                    {content ? (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {content}
-                      </ReactMarkdown>
-                    ) : (
-                      <p className="text-gray-400 italic">在左侧输入内容，这里会实时显示渲染效果...</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Photos Management */}
-        {activeTab === 'photos' && (
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">照片库 ({photos.length} 张)</h2>
-              <button
-                onClick={() => setShowUpload(true)}
-                className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 font-medium"
-              >
-                + 上传照片
-              </button>
+              )}
             </div>
+          )}
 
-            {photos.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">还没有上传任何照片</p>
-                <button
-                  onClick={() => setShowUpload(true)}
-                  className="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
-                >
-                  上传第一张照片
-                </button>
+          {/* Photo Management */}
+          {activeTab === 'photos' && (
+            <div className="space-y-8 animate-fade-in">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">照片管理</h2>
+                <span className="text-gray-500">{photos.length} 张照片</span>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+              {/* Upload Area */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-slate-700">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">上传新照片</h3>
+                <PhotoUpload onUploadComplete={fetchPhotos} />
+              </div>
+
+              {/* Photo Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 {photos.map((photo) => (
-                  <div key={photo.id} className="relative group">
+                  <div key={photo.id} className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-slate-800 shadow-sm hover:shadow-xl transition-all duration-300">
                     <img
                       src={photo.image_url}
                       alt={photo.title || ''}
-                      className="w-full h-40 object-cover rounded-lg"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex flex-col items-center justify-center gap-2">
-                      <button
-                        onClick={() => handleTogglePhotoVisibility(photo.id, photo.is_public)}
-                        className={`px-3 py-1 rounded text-xs font-medium ${
-                          photo.is_public ? 'bg-green-500' : 'bg-gray-500'
-                        } text-white`}
-                      >
-                        {photo.is_public ? '✓ 公开' : '🔒 私密'}
-                      </button>
-                      <button
-                        onClick={() => handleDeletePhoto(photo.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium"
-                      >
-                        删除
-                      </button>
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                      <p className="text-white text-sm font-medium truncate mb-3">{photo.title || '无标题'}</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleTogglePhotoVisibility(photo.id, photo.is_public)}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${photo.is_public
+                              ? 'bg-green-500/20 text-green-300 hover:bg-green-500 hover:text-white'
+                              : 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500 hover:text-white'
+                            }`}
+                        >
+                          {photo.is_public ? <FaEye /> : <FaEyeSlash />}
+                        </button>
+                        <button
+                          onClick={() => handleDeletePhoto(photo.id)}
+                          className="flex-1 py-1.5 bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
                     </div>
-                    <p className="mt-1 text-xs text-gray-600 truncate">{photo.title || '无标题'}</p>
+
+                    {/* Status Badge (Always visible) */}
+                    <div className={`absolute top-3 right-3 w-3 h-3 rounded-full ${photo.is_public ? 'bg-green-500' : 'bg-yellow-500'
+                      } ring-2 ring-white dark:ring-slate-800`} />
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      </main>
 
-      {/* Upload Modal */}
+      {/* Upload Modal (Legacy, kept if needed but unused in new design) */}
       <UploadModal
         isOpen={showUpload}
         onClose={() => setShowUpload(false)}
