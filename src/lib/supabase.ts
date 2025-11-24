@@ -108,25 +108,44 @@ export type BlogPost = {
   summary?: string
 }
 
+export interface Trip {
+  id: string
+  title: string
+  description?: string
+  start_date?: string
+  end_date?: string
+  cover_image_url?: string
+  status: 'planned' | 'completed'
+  created_at: string
+  updated_at: string
+}
+
 export type Photo = {
   id: string
-  image_url: string
-  title: string | null
-  description: string | null
-  is_public: boolean
   created_at: string
-  // Smart Album Fields
-  metadata: Record<string, any> | null
-  taken_at: string | null
-  latitude: number | null
-  longitude: number | null
-  location_name: string | null
-  tags: string[] | null
-  camera_make: string | null
-  camera_model: string | null
-  lens_model: string | null
-  focal_length: number | null
-  aperture: number | null
-  iso: number | null
-  exposure_time: string | null
+  image_url: string
+  title?: string
+  description?: string
+  width?: number
+  height?: number
+  trip_id?: string
+  taken_at?: string
+  camera_model?: string
+  latitude?: number
+  longitude?: number
+  location_name?: string
+}
+
+export interface Song {
+  id: string
+  title: string
+  artist: string
+  album: string
+  cover_url: string
+  audio_url: string
+  duration: number
+  color: string
+  dark_color: string
+  lyrics: string
+  created_at: string
 }

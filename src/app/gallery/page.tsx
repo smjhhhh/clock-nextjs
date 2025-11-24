@@ -7,6 +7,7 @@ import 'yet-another-react-lightbox/styles.css'
 import Navbar from '@/components/layout/Navbar'
 import dynamic from 'next/dynamic'
 import { FaTh, FaMapMarkedAlt } from 'react-icons/fa'
+import Image from 'next/image'
 
 // Dynamically import Map to avoid SSR issues with Leaflet
 const PhotoMap = dynamic(() => import('@/components/gallery/PhotoMap'), {
@@ -21,27 +22,49 @@ export default function GalleryPage() {
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid')
 
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const PAGE_SIZE = 12
+
   useEffect(() => {
-    fetchPhotos()
+    fetchPhotos(0)
   }, [])
 
-  const fetchPhotos = async () => {
-    setLoading(true)
+  const fetchPhotos = async (pageNumber = 0) => {
+    if (pageNumber === 0) setLoading(true)
     try {
+      const from = pageNumber * PAGE_SIZE
+      const to = from + PAGE_SIZE - 1
+
       const { data, error } = await supabase
         .from('photos')
         .select('*')
         .eq('is_public', true)
-        .order('taken_at', { ascending: false }) // Sort by taken_at if available
+        .order('taken_at', { ascending: false })
         .order('created_at', { ascending: false })
+        .range(from, to)
 
       if (error) throw error
-      setPhotos(data || [])
+
+      if (data) {
+        if (pageNumber === 0) {
+          setPhotos(data)
+        } else {
+          setPhotos(prev => [...prev, ...data])
+        }
+        setHasMore(data.length === PAGE_SIZE)
+      }
     } catch (error) {
       console.error('Failed to fetch photos:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadMore = () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    fetchPhotos(nextPage)
   }
 
   const openLightbox = (index: number) => {
@@ -132,10 +155,12 @@ export default function GalleryPage() {
                       onClick={() => openLightbox(index)}
                       className="cursor-pointer aspect-square overflow-hidden relative"
                     >
-                      <img
+                      <Image
                         src={photo.image_url}
                         alt={photo.title || 'Photo'}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       />
                       {/* Badges */}
                       <div className="absolute bottom-2 left-2 flex gap-1">
@@ -166,6 +191,17 @@ export default function GalleryPage() {
               </div>
             ) : (
               <PhotoMap photos={photos} />
+            )}
+
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <button
+                  onClick={loadMore}
+                  className="px-6 py-2 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-full shadow-md hover:shadow-lg transition-all border border-gray-200 dark:border-slate-700 font-medium"
+                >
+                  Load More
+                </button>
+              </div>
             )}
           </>
         )}

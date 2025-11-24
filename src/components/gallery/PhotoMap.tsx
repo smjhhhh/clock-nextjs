@@ -21,7 +21,7 @@ const customIcon = new L.Icon({
     shadowSize: [41, 41]
 })
 
-export default function PhotoMap({ photos }: { photos: Photo[] }) {
+export default function PhotoMap({ photos, className }: { photos: Photo[], className?: string }) {
     // Filter photos that have location data
     const locatedPhotos = photos.filter(p => p.latitude && p.longitude)
 
@@ -38,7 +38,7 @@ export default function PhotoMap({ photos }: { photos: Photo[] }) {
     const centerLng = locatedPhotos.reduce((sum, p) => sum + (p.longitude || 0), 0) / locatedPhotos.length
 
     return (
-        <div className="h-[600px] w-full rounded-lg overflow-hidden shadow-lg z-0 relative">
+        <div className={`w-full rounded-lg overflow-hidden shadow-lg z-0 relative ${className || 'h-[600px]'}`}>
             <MapContainer
                 center={[centerLat, centerLng]}
                 zoom={3}

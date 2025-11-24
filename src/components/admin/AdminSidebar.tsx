@@ -1,10 +1,10 @@
 'use client'
 
-import { FaHome, FaPenNib, FaImages, FaSignOutAlt, FaUserCircle } from 'react-icons/fa'
+import { FaHome, FaPenNib, FaImages, FaSignOutAlt, FaUserCircle, FaMapMarkedAlt, FaMusic } from 'react-icons/fa'
 
 interface AdminSidebarProps {
-    activeTab: 'dashboard' | 'blog' | 'photos'
-    setActiveTab: (tab: 'dashboard' | 'blog' | 'photos') => void
+    activeTab: 'dashboard' | 'blog' | 'photos' | 'trips' | 'music'
+    setActiveTab: (tab: 'dashboard' | 'blog' | 'photos' | 'trips' | 'music') => void
     userEmail?: string | null
     onSignOut: () => void
 }
@@ -13,7 +13,9 @@ export default function AdminSidebar({ activeTab, setActiveTab, userEmail, onSig
     const menuItems = [
         { id: 'dashboard', label: '仪表盘', icon: FaHome },
         { id: 'blog', label: '博客管理', icon: FaPenNib },
-        { id: 'photos', label: '照片管理', icon: FaImages },
+        { id: 'photos', label: '相册管理', icon: FaImages },
+        { id: 'trips', label: '行程管理', icon: FaMapMarkedAlt },
+        { id: 'music', label: '音乐管理', icon: FaMusic }
     ] as const
 
     return (
@@ -33,8 +35,8 @@ export default function AdminSidebar({ activeTab, setActiveTab, userEmail, onSig
                         key={item.id}
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${activeTab === item.id
-                                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50'
                             }`}
                     >
                         <item.icon className={`text-lg ${activeTab === item.id ? 'text-white' : 'text-gray-400 group-hover:text-pink-500'

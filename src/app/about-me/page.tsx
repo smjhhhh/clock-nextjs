@@ -1,10 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { FaReact, FaNodeJs, FaPython, FaDocker, FaGitAlt, FaVuejs, FaGithub, FaMusic } from 'react-icons/fa'
 import { SiTypescript, SiTailwindcss, SiGmail } from 'react-icons/si'
 import PhotoFrame from '@/components/PhotoFrame'
+import VinylPlayer from '@/components/music/VinylPlayer'
+import AppleMusicPlayer from '@/components/music/AppleMusicPlayer'
+import { FaPlane } from 'react-icons/fa'
 
 // Translation types
 interface Translations {
@@ -196,30 +199,68 @@ const mbtiNames: Record<string, string> = {
   'ESFP': '表演者'
 }
 
-const MusicBox = () => {
+const TravelCard = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
+  }
+
   return (
-    <div className="bg-white dark:bg-white/5 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-800 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
-      {/* Diagonal stripes background */}
+    <Link href="/travel" className="block group perspective-1000">
       <div
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 10px)'
-        }}
-      />
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        className="relative h-80 rounded-[2rem] overflow-hidden transition-all duration-500 transform group-hover:rotate-y-2 group-hover:scale-[1.02] shadow-xl group-hover:shadow-2xl border border-white/10"
+      >
+        {/* Background Image with Parallax feel */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" />
 
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-6">
-          <FaMusic className="text-lg" />
-          <span className="text-sm font-medium">Music</span>
-        </div>
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent opacity-60" />
 
-        <div className="space-y-2">
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight">摇滚</h3>
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent tracking-tight">Pop</h3>
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-400 bg-clip-text text-transparent tracking-tight">R&B</h3>
+        {/* Spotlight Effect */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.15), transparent 40%)`
+          }}
+        />
+
+        {/* Content */}
+        <div className="absolute inset-0 p-8 flex flex-col justify-between text-white z-10">
+          <div className="flex justify-between items-start">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-lg">
+              Travel Log
+            </div>
+            <div className="bg-white/10 p-3 rounded-full backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors">
+              <FaPlane className="text-xl transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
+            </div>
+          </div>
+
+          <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+            <h3 className="text-4xl font-bold mb-3 leading-tight drop-shadow-xl">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">探索</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">未知世界</span>
+            </h3>
+            <p className="text-gray-300 text-sm mb-6 line-clamp-2 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 translate-y-4 group-hover:translate-y-0">
+              每一次出发都是一次新生。记录足迹，收藏感动，绘制属于你的全球旅行地图。
+            </p>
+
+            <div className="inline-flex items-center gap-3 text-sm font-bold text-white/90 group-hover:text-cyan-300 transition-colors duration-300 border-b border-transparent group-hover:border-cyan-300 pb-0.5">
+              Start Journey <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
@@ -360,7 +401,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' : 'bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100'} transition-colors duration-300`}>
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' : 'bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100'} transition-colors duration-300 relative`}>
+      {/* Global Noise Texture */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] z-0 mix-blend-overlay"
+        style={{
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'
+        }}
+      />
       {/* Navigation */}
       <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-slate-900/80 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -718,9 +765,14 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Travel Card */}
+            <section>
+              <TravelCard />
+            </section>
+
             {/* Music Box */}
             <section>
-              <MusicBox />
+              <AppleMusicPlayer />
             </section>
 
             {/* Photo Gallery */}

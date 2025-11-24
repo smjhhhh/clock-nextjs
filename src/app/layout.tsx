@@ -14,8 +14,33 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Yoru's Homepage",
-  description: "Personal homepage with gallery, blog, and tools",
+  title: "Shen Mingjie - Portfolio",
+  description: "Personal portfolio, travel blog, and music player of Shen Mingjie.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Shen Mingjie",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false, // Prevent zooming for app-like feel
+  },
+  openGraph: {
+    title: "Yoru's Homepage",
+    description: "Explore my personal gallery, blog posts, and creative projects.",
+    url: 'https://clock-nextjs.vercel.app',
+    siteName: "Yoru's Homepage",
+    locale: 'zh_CN',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Yoru's Homepage",
+    description: "Explore my personal gallery, blog posts, and creative projects.",
+  },
 }
 
 export default function RootLayout({

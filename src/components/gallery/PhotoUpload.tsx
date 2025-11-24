@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { supabase } from '@/lib/supabase'
 import EXIF from 'exif-js'
 import { FaCloudUploadAlt, FaSpinner, FaCheck, FaTimes } from 'react-icons/fa'
+import heic2any from 'heic2any'
 
 export default function PhotoUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
     const [uploading, setUploading] = useState(false)
@@ -32,7 +33,28 @@ export default function PhotoUpload({ onUploadComplete }: { onUploadComplete: ()
         setMessage(null)
 
         try {
-            for (const file of acceptedFiles) {
+            for (let file of acceptedFiles) {
+                // 0. Convert HEIC if needed
+                if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
+                    try {
+                        const convertedBlob = await heic2any({
+                            blob: file,
+                            toType: 'image/jpeg',
+                            quality: 0.8
+                        })
+
+                        // Handle case where result is an array (shouldn't happen for single file but good for safety)
+                        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob
+
+                        file = new File([blob], file.name.replace(/\.heic$/i, '.jpg'), {
+                            type: 'image/jpeg'
+                        })
+                    } catch (e) {
+                        console.error('HEIC conversion failed:', e)
+                        throw new Error(`Failed to convert HEIC image: ${file.name}`)
+                    }
+                }
+
                 // 1. Extract Metadata
                 const metadata = await extractMetadata(file)
                 console.log('Extracted Metadata:', metadata)
@@ -145,15 +167,15 @@ export default function PhotoUpload({ onUploadComplete }: { onUploadComplete: ()
                         <p className="text-lg font-medium">
                             {isDragActive ? 'Drop photos here...' : 'Drag & drop photos here, or click to select'}
                         </p>
-                        <p className="text-sm mt-1">Supports JPG, PNG with EXIF data</p>
+                        <p className="text-sm mt-1">Supports JPG, PNG, HEIC with EXIF data</p>
                     </div>
                 )}
             </div>
 
             {message && (
                 <div className={`p-4 rounded-lg flex items-center ${message.type === 'success'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                     }`}>
                     {message.type === 'success' ? <FaCheck className="mr-2" /> : <FaTimes className="mr-2" />}
                     {message.text}
