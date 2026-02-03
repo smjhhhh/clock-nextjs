@@ -1,16 +1,19 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/navigation'
+import { useTranslations, useLocale } from 'next-intl'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function Navbar() {
   const pathname = usePathname()
+  const t = useTranslations('nav')
+  const locale = useLocale()
 
   const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/gallery', label: 'Gallery' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/mbti-test', label: 'MBTI Test' },
+    { href: '/', label: t('home') },
+    { href: '/gallery', label: t('gallery') },
+    { href: '/blog', label: t('blog') },
+    { href: '/mbti-test', label: t('mbtiTest') },
   ]
 
   const isActive = (href: string) => {
@@ -45,6 +48,11 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
+          </div>
+
+          {/* Language Switcher */}
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
           </div>
 
           {/* Mobile menu button */}

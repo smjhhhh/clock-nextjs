@@ -1,6 +1,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { FaMusic, FaImage, FaGlobeAmericas, FaCompass, FaTerminal } from 'react-icons/fa'
+import { App } from '@/types/os'
 
 interface DockProps {
     apps: App[]
@@ -9,19 +10,12 @@ interface DockProps {
     onAppClick: (id: string) => void
 }
 
-interface App {
-    id: string
-    title: string
-    icon: React.ReactNode
-    color: string
-}
-
 export const APPS: App[] = [
-    { id: 'finder', title: 'Finder', icon: <FaCompass />, color: 'bg-blue-500' },
-    { id: 'music', title: 'Music', icon: <FaMusic />, color: 'bg-pink-500' },
-    { id: 'photos', title: 'Photos', icon: <FaImage />, color: 'bg-purple-500' },
-    { id: 'travel', title: 'Travel', icon: <FaGlobeAmericas />, color: 'bg-green-500' },
-    { id: 'browser', title: 'About Me', icon: <FaTerminal />, color: 'bg-gray-700' },
+    { id: 'finder', title: 'Finder', icon: <FaCompass />, color: 'bg-blue-500', type: 'app' },
+    { id: 'music', title: 'Music', icon: <FaMusic />, color: 'bg-pink-500', type: 'app' },
+    { id: 'photos', title: 'Photos', icon: <FaImage />, color: 'bg-purple-500', type: 'app' },
+    { id: 'travel', title: 'Travel', icon: <FaGlobeAmericas />, color: 'bg-green-500', type: 'app' },
+    { id: 'browser', title: 'About Me', icon: <FaTerminal />, color: 'bg-gray-700', type: 'app' },
 ]
 
 export default function Dock({ apps, openApps, activeApp, onAppClick }: DockProps) {

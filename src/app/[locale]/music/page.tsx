@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import Image from 'next/image'
 import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaVolumeUp, FaRandom, FaRedo, FaList, FaQuoteRight, FaArrowLeft } from 'react-icons/fa'
 import { supabase, Song } from '@/lib/supabase'

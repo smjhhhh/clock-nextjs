@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "首页",
+    "aboutMe": "关于我",
+    "gallery": "相册",
+    "blog": "博客",
+    "mbtiTest": "MBTI测试",
+    "zodiac": "星座",
+    "music": "音乐",
+    "travel": "旅行",
+    "os": "桌面模拟器",
+    "login": "登录",
+    "logout": "退出",
+    "admin": "管理后台"
+  },
+  "landing": {
+    "greeting": "Hello, I'm Yoru",
+    "subtitle": "欢迎来到我的创意空间 🌙",
+    "title": "全栈开发 / 碎碎念 / 工具集成",
+    "quote": "你好，我是一名全栈开发工程师、技术爱好者、INFP、杀戮尖塔高手",
+    "buttons": {
+      "home": "进入主页",
+      "mbtiTest": "MBTI 测试",
+      "github": "Github"
+    },
+    "mbtiCard": {
+      "title": "MBTI 性格测试",
+      "description": "探索你的个性类型"
+    },
+    "zodiacCard": {
+      "title": "星座运势",
+      "description": "了解你的星座特质"
+    },
+    "galleryCard": {
+      "title": "照片集",
+      "description": "记录美好瞬间"
+    },
+    "blogCard": {
+      "title": "博客",
+      "description": "分享思考与创意"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "出错了",
+    "noData": "暂无数据",
+    "readMore": "阅读更多",
+    "backToList": "返回列表",
+    "next": "下一步",
+    "previous": "上一步",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "search": "搜索",
+    "filter": "筛选"
+  }
+}

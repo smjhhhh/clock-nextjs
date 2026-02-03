@@ -19,6 +19,7 @@
     "leaflet": "^1.9.4",
     "music-metadata-browser": "^2.5.11",
     "next": "16.0.3",
+    "next-intl": "^4.8.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-draggable": "^4.5.0",

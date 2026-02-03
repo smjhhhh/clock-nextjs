@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase, Trip, Photo } from '@/lib/supabase'
 import PhotoMap from '@/components/gallery/PhotoMap'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import Image from 'next/image'
 import { FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa'
 

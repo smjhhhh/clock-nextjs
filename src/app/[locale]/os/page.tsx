@@ -10,6 +10,16 @@ import DesktopPhotosApp from '@/components/os/apps/DesktopPhotosApp'
 import PhotoMap from '@/components/gallery/PhotoMap'
 import { supabase, Photo, Song } from '@/lib/supabase'
 import DesktopIcon from '@/components/os/DesktopIcon'
+import Launchpad from '@/components/os/Launchpad'
+import NotificationCenter from '@/components/os/NotificationCenter'
+import ContextMenu from '@/components/os/ContextMenu'
+
+const WALLPAPERS = [
+    '/wallpapers/ventura.jpg',
+    '/wallpapers/monterey.jpg',
+    '/wallpapers/bigsur.jpg',
+    '/wallpapers/catalina.jpg'
+]
 
 export default function OSPage() {
     const [activeApp, setActiveApp] = useState<string | null>(null)
@@ -19,6 +29,12 @@ export default function OSPage() {
     const [zIndexes, setZIndexes] = useState<Record<string, number>>({})
     const [photos, setPhotos] = useState<Photo[]>([])
     const [importedSongs, setImportedSongs] = useState<Song[]>([])
+
+    // New State
+    const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false)
+    const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false)
+    const [wallpaperIndex, setWallpaperIndex] = useState(0)
+    const [contextMenu, setContextMenu] = useState({ x: 0, y: 0, isOpen: false })
 
     // Default Desktop Icons
     const desktopIcons = [
@@ -47,6 +63,11 @@ export default function OSPage() {
     }, [])
 
     const launchApp = (id: string) => {
+        if (id === 'launchpad') {
+            setIsLaunchpadOpen(true)
+            return
+        }
+
         if (!openApps.includes(id)) {
             setOpenApps([...openApps, id])
         }
@@ -105,6 +126,10 @@ export default function OSPage() {
         }
     }
 
+    const changeWallpaper = () => {
+        setWallpaperIndex((prev) => (prev + 1) % WALLPAPERS.length)
+    }
+
     const renderAppContent = (id: string) => {
         switch (id) {
             case 'music':
@@ -145,9 +170,18 @@ export default function OSPage() {
     }
 
     return (
-        <div className="h-screen w-screen overflow-hidden font-sans text-gray-900 dark:text-white">
-            <Desktop onContextMenu={(e) => e.preventDefault()}>
-                <MenuBar activeApp={APPS.find(a => a.id === activeApp)?.title || 'Finder'} />
+        <div
+            className="h-screen w-screen overflow-hidden font-sans text-gray-900 dark:text-white bg-cover bg-center transition-all duration-700"
+            style={{ backgroundImage: `url(${WALLPAPERS[wallpaperIndex]})` }}
+        >
+            <Desktop onContextMenu={(e) => {
+                e.preventDefault()
+                setContextMenu({ x: e.clientX, y: e.clientY, isOpen: true })
+            }}>
+                <MenuBar
+                    activeApp={APPS.find(a => a.id === activeApp)?.title || 'Finder'}
+                    onToggleNotificationCenter={() => setIsNotificationCenterOpen(!isNotificationCenterOpen)}
+                />
 
                 {/* Desktop Icons */}
                 {desktopIcons.map(icon => (
@@ -181,11 +215,13 @@ export default function OSPage() {
                             isActive={activeApp === appId}
                             isMinimized={minimizedApps.includes(appId)}
                             isMaximized={maximizedApps.includes(appId)}
+                            zIndex={zIndexes[appId] || 10}
                             onClose={closeApp}
                             onMinimize={minimizeApp}
                             onMaximize={maximizeApp}
                             onFocus={focusApp}
                             initialSize={appId === 'music' ? { width: 1000, height: 600 } : { width: 1000, height: 700 }}
+                            customTitleBar={appId === 'music' || appId === 'photos'}
                         >
                             {renderAppContent(appId)}
                         </Window>
@@ -197,6 +233,29 @@ export default function OSPage() {
                     openApps={openApps}
                     activeApp={activeApp}
                     onAppClick={launchApp}
+                />
+
+                <Launchpad
+                    isOpen={isLaunchpadOpen}
+                    onClose={() => setIsLaunchpadOpen(false)}
+                    apps={APPS}
+                    onLaunch={launchApp}
+                />
+
+                <NotificationCenter
+                    isOpen={isNotificationCenterOpen}
+                    onClose={() => setIsNotificationCenterOpen(false)}
+                />
+
+                <ContextMenu
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    isOpen={contextMenu.isOpen}
+                    onClose={() => setContextMenu({ ...contextMenu, isOpen: false })}
+                    onAction={(action: string) => {
+                        if (action === 'change_wallpaper') changeWallpaper()
+                        // Handle other actions
+                    }}
                 />
             </Desktop>
         </div>

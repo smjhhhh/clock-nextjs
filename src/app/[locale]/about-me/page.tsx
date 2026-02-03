@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { FaReact, FaNodeJs, FaPython, FaDocker, FaGitAlt, FaVuejs, FaGithub, FaMusic } from 'react-icons/fa'
 import { SiTypescript, SiTailwindcss, SiGmail } from 'react-icons/si'
 import PhotoFrame from '@/components/PhotoFrame'
@@ -597,6 +597,25 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </section>
+
+            {/* Personal Signature */}
+            <section>
+              <div className="backdrop-blur-xl bg-gradient-to-br from-pink-50/70 to-rose-50/70 dark:from-pink-900/20 dark:to-rose-900/20 rounded-2xl p-8 shadow-lg border border-pink-200/50 dark:border-pink-700/30">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span>💭</span>
+                  <span>个性签名</span>
+                </h3>
+                <blockquote className="relative">
+                  <div className="absolute -left-2 top-0 text-6xl text-pink-300/30 dark:text-pink-600/20 leading-none">"</div>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic pl-6 pr-4">
+                    今年的我们已与去年不同，我们爱的人亦是如此<br />
+                    如果变化中的我们依旧爱着那个变化中的人<br />
+                    这可真是令人欣喜的意外
+                  </p>
+                  <div className="absolute -right-2 bottom-0 text-6xl text-pink-300/30 dark:text-pink-600/20 leading-none">"</div>
+                </blockquote>
               </div>
             </section>
 

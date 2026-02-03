@@ -1,16 +1,12 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './src/i18n'
 
-export async function middleware(request: NextRequest) {
-  // Let all /admin routes through
-  // Authentication will be handled by the page components themselves
-  // This avoids cookie/localStorage sync issues with Supabase
-  return NextResponse.next()
-}
+export default createMiddleware(routing)
 
-// Configure which routes to run middleware on
 export const config = {
-  matcher: [
-    '/admin/:path*',
-  ],
+  // Match all pathnames except for
+  // - … static files and images
+  // - … Next.js internals
+  // - … API routes
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 }

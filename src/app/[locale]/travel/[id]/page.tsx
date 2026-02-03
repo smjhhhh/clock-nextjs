@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase, Trip, Photo } from '@/lib/supabase'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt, FaCamera } from 'react-icons/fa'
 import PhotoMap from '@/components/gallery/PhotoMap'
 

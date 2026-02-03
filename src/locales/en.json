@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Home",
+    "aboutMe": "About Me",
+    "gallery": "Gallery",
+    "blog": "Blog",
+    "mbtiTest": "MBTI Test",
+    "zodiac": "Zodiac",
+    "music": "Music",
+    "travel": "Travel",
+    "os": "Desktop OS",
+    "login": "Login",
+    "logout": "Logout",
+    "admin": "Admin"
+  },
+  "landing": {
+    "greeting": "Hello, I'm Yoru",
+    "subtitle": "Welcome to My Creative Space 🌙",
+    "title": "Full-Stack Dev / Thoughts / Tool Integration",
+    "quote": "Hi, I'm a full-stack engineer, tech enthusiast, INFP, and Slay the Spire master",
+    "buttons": {
+      "home": "Enter Home",
+      "mbtiTest": "MBTI Test",
+      "github": "Github"
+    },
+    "mbtiCard": {
+      "title": "MBTI Personality Test",
+      "description": "Explore Your Personality Type"
+    },
+    "zodiacCard": {
+      "title": "Zodiac Horoscope",
+      "description": "Discover Your Zodiac Traits"
+    },
+    "galleryCard": {
+      "title": "Photo Gallery",
+      "description": "Capture Beautiful Moments"
+    },
+    "blogCard": {
+      "title": "Blog",
+      "description": "Share Thoughts & Creativity"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "noData": "No data available",
+    "readMore": "Read More",
+    "backToList": "Back to List",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter"
+  }
+}
